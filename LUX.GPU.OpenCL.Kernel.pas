@@ -589,9 +589,12 @@ end;
 
 procedure TCLKernel<TCLExecut_,TCLContex_,TCLPlatfo_>.CreateHandle;
 var
+   B :TCLDeploy;
    E :T_cl_int;
 begin
-     _Handle := clCreateKernel( TCLExecut( Execut ).ExeHan, P_char( AnsiString( _Name ) ), @E );
+     B := TCLExecut( Execut ).Deploys[ TCLQueuer( Queuer ).Device ];
+
+     _Handle := clCreateKernel( B.Handle, P_char( AnsiString( _Name ) ), @E );
 
      AssertCL( E );
 end;
