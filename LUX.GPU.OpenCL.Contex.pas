@@ -29,12 +29,14 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             TCLContex_  = TCLContex <TCLPlatfo_>;
             TCLQueuers_ = TCLQueuers<TCLContex_,TCLPlatfo_>;
             TCLMemorys_ = TCLMemorys<TCLContex_,TCLPlatfo_>;
-            TCLProgras_ = TCLProgras<TCLContex_,TCLPlatfo_>;
+            TCLLibrars_ = TCLLibrars<TCLContex_,TCLPlatfo_>;
+            TCLExecuts_ = TCLExecuts<TCLContex_,TCLPlatfo_>;
      protected
        _Queuers :TCLQueuers_;
        _Handle  :T_cl_context;
        _Memorys :TCLMemorys_;
-       _Progras :TCLProgras_;
+       _Librars :TCLLibrars_;
+       _Executs :TCLExecuts_;
        ///// アクセス
        function GetHandle :T_cl_context;
        procedure SetHandle( const Handle_:T_cl_context );
@@ -51,7 +53,8 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        property Queuers :TCLQueuers_  read   _Queuers                ;
        property Handle  :T_cl_context read GetHandle  write SetHandle;
        property Memorys :TCLMemorys_  read   _Memorys                ;
-       property Progras :TCLProgras_  read   _Progras                ;
+       property Librars :TCLLibrars_  read   _Librars                ;
+       property Executs :TCLExecuts_  read   _Executs                ;
        ///// メソッド
        function GetDeviceIDs :TArray<T_cl_device_id>;
      end;
@@ -138,7 +141,8 @@ begin
 
      _Queuers := TCLQueuers_.Create( Self );
      _Memorys := TCLMemorys_.Create( Self );
-     _Progras := TCLProgras_.Create( Self );
+     _Librars := TCLLibrars_.Create( Self );
+     _Executs := TCLExecuts_.Create( Self );
 end;
 
 constructor TCLContex<TCLPlatfo_>.Create( const Platfo_:TCLPlatfo_ );
@@ -148,7 +152,8 @@ end;
 
 destructor TCLContex<TCLPlatfo_>.Destroy;
 begin
-     _Progras.Free;
+     _Executs.Free;
+     _Librars.Free;
      _Memorys.Free;
      _Queuers.Free;
 
