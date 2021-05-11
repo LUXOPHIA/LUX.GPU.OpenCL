@@ -145,7 +145,7 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        function GetPROGRAM_SCOPE_GLOBAL_DTORS_PRESENT :T_cl_bool ;
        {$ENDIF}
        ///// メソッド
-       procedure CreateHandle; virtual;
+       function CreateHandle :T_cl_int; virtual;
        procedure DestroHandle; virtual;
      public
        constructor Create; override;
@@ -328,15 +328,14 @@ end;
 
 function TCLDeploy<TCLContex_,TCLPlatfo_>.Link :T_cl_int;
 var
-   P :T_cl_program;
-   E :T_cl_int;
+   H :T_cl_program;
 begin
-     P := Execut.Handle;
+     H := Execut.Handle;
 
      _Handle := clLinkProgram( TCLExecut( Execut ).Contex.Handle,
                                1, @Device.Handle,
                                nil,
-                               1, @P,
+                               1, @H,
                                nil, nil,
                                @Result );
 
@@ -486,7 +485,7 @@ end;
 
 function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetHandle :T_cl_program;
 begin
-     if not Assigned( _Handle ) then CreateHandle;
+     if not Assigned( _Handle ) then AssertCL( CreateHandle );
 
      Result := _Handle;
 end;
@@ -521,16 +520,13 @@ function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_SCOPE_GLOBAL_DT
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-procedure TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.CreateHandle;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.CreateHandle :T_cl_int;
 var
    C :P_char;
-   E :T_cl_int;
 begin
      C := P_char( AnsiString( _Source.Text ) );
 
-     _Handle := clCreateProgramWithSource( TCLContex( Contex ).Handle, 1, @C, nil, @E );
-
-     AssertCL( E );
+     _Handle := clCreateProgramWithSource( TCLContex( Contex ).Handle, 1, @C, nil, @Result );
 end;
 
 procedure TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.DestroHandle;

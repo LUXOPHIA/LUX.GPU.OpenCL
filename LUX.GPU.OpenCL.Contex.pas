@@ -41,8 +41,8 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        function GetHandle :T_cl_context;
        procedure SetHandle( const Handle_:T_cl_context );
        ///// メソッド
-       procedure CreateHandle;
-       procedure DestroHandle;
+       function CreateHandle :T_cl_int; virtual;
+       procedure DestroHandle; virtual;
      public
        constructor Create; override;
        constructor Create( const Platfo_:TCLPlatfo_ ); overload; virtual;
@@ -96,7 +96,7 @@ uses LUX.GPU.OpenCL;
 
 function TCLContex<TCLPlatfo_>.GetHandle :T_cl_context;
 begin
-     if not Assigned( _Handle ) then CreateHandle;
+     if not Assigned( _Handle ) then AssertCL( CreateHandle );
 
      Result := _Handle;
 end;
@@ -110,7 +110,7 @@ end;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-procedure TCLContex<TCLPlatfo_>.CreateHandle;
+function TCLContex<TCLPlatfo_>.CreateHandle :T_cl_int;
 var
    Ps :array [ 0..2 ] of T_cl_context_properties;
    Ds :TArray<T_cl_device_id>;
@@ -121,7 +121,10 @@ begin
 
      Ds := GetDeviceIDs;
 
-     _Handle := clCreateContext( @Ps[0], Length( Ds ), @Ds[0], nil, nil, nil );
+     _Handle := clCreateContext( @Ps[0],
+                                 Length( Ds ), @Ds[0],
+                                 nil, nil,
+                                 @Result );
 end;
 
 procedure TCLContex<TCLPlatfo_>.DestroHandle;

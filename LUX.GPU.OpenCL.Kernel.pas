@@ -143,8 +143,8 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        function GetKERNEL_ARG_TYPE_QUALIFIER( const I_:T_cl_uint ) :T_cl_kernel_arg_type_qualifier;
        function GetKERNEL_ARG_NAME( const I_:T_cl_uint ) :String;
        ///// メソッド
-       procedure CreateHandle;
-       procedure DestroHandle;
+       function CreateHandle :T_cl_int; virtual;
+       procedure DestroHandle; virtual;
      public
        constructor Create; override;
        constructor Create( const Execut_:TCLExecut_ ); overload; virtual;
@@ -490,7 +490,7 @@ end;
 
 function TCLKernel<TCLExecut_,TCLContex_,TCLPlatfo_>.GetHandle :T_cl_kernel;
 begin
-     if not Assigned( _Handle ) then CreateHandle;
+     if not Assigned( _Handle ) then AssertCL( CreateHandle );
 
      Result := _Handle;
 end;
@@ -587,16 +587,13 @@ end;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-procedure TCLKernel<TCLExecut_,TCLContex_,TCLPlatfo_>.CreateHandle;
+function TCLKernel<TCLExecut_,TCLContex_,TCLPlatfo_>.CreateHandle :T_cl_int;
 var
    B :TCLDeploy;
-   E :T_cl_int;
 begin
      B := TCLExecut( Execut ).Deploys[ TCLQueuer( Queuer ).Device ];
 
-     _Handle := clCreateKernel( B.Handle, P_char( AnsiString( _Name ) ), @E );
-
-     AssertCL( E );
+     _Handle := clCreateKernel( B.Handle, P_char( AnsiString( _Name ) ), @Result );
 end;
 
 procedure TCLKernel<TCLExecut_,TCLContex_,TCLPlatfo_>.DestroHandle;
