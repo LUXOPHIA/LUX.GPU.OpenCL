@@ -95,22 +95,40 @@ begin
      end;
 end;
 
-procedure ShowProgras( const Strings_:TStrings; const Progras_:TCLProgras );
+procedure ShowExecuts( const Strings_:TStrings; const Executs_:TCLExecuts );
 var
-   P :TCLProgra;
+   E :TCLExecut;
 begin
      with Strings_ do
      begin
           Add( ' ┃　│　┃　│' );
-          Add( ' ┃　│　┃　┝ Progras(' + Progras_.Count.ToString + ') :TCLProgras' );
-          for P in Progras_ do
+          Add( ' ┃　│　┃　┝ Executs(' + Executs_.Count.ToString + ') :TCLExecuts' );
+          for E in Executs_ do
           begin
                Add( ' ┃　│　┃　│　┃' );
-               Add( ' ┃　│　┃　│　┣・Progra[' + P.Order.ToString + '] :TCLProgra' );
-               Add( ' ┃　│　┃　│　┃　├ LangVer = ' + P.LangVer.ToString );
+               Add( ' ┃　│　┃　│　┣・Execut[' + E.Order.ToString + '] :TCLExecut' );
+               Add( ' ┃　│　┃　│　┃　├ Name    = ' + E.Name );
+               Add( ' ┃　│　┃　│　┃　├ LangVer = ' + E.LangVer.ToString );
 
-               ShowDeploys( Strings_, P.Deploys );
-               ShowKernels( Strings_, P.Kernels );
+               ShowDeploys( Strings_, E.Deploys );
+               ShowKernels( Strings_, E.Kernels );
+          end;
+     end;
+end;
+
+procedure ShowLibrars( const Strings_:TStrings; const Librars_:TCLLibrars );
+var
+   L :TCLLibrar;
+begin
+     with Strings_ do
+     begin
+          Add( ' ┃　│　┃　│' );
+          Add( ' ┃　│　┃　┝ Librars(' + Librars_.Count.ToString + ') :TCLLibrars' );
+          for L in Librars_ do
+          begin
+               Add( ' ┃　│　┃　│　┃' );
+               Add( ' ┃　│　┃　│　┣・Librar[' + L.Order.ToString + '] :TCLLibrar' );
+               Add( ' ┃　│　┃　│　┃　├ Name = ' + L.Name );
           end;
      end;
 end;
@@ -165,7 +183,8 @@ begin
 
                ShowQueuers( Strings_, C.Queuers );
                ShowMemorys( Strings_, C.Memorys );
-               ShowProgras( Strings_, C.Progras );
+               ShowLibrars( Strings_, C.Librars );
+               ShowExecuts( Strings_, C.Executs );
           end;
      end;
 end;
