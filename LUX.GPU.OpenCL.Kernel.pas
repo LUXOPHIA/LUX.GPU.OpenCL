@@ -591,9 +591,7 @@ procedure TCLKernel<TCLProgra_,TCLContex_,TCLPlatfo_>.CreateHandle;
 var
    E :T_cl_int;
 begin
-     TCLProgra( Progra ).BuildTo( TCLQueuer( Queuer ).Device );
-
-     _Handle := clCreateKernel( TCLProgra( Progra ).Handle, P_char( AnsiString( _Name ) ), @E );
+     _Handle := clCreateKernel( TCLExecut( Progra ).ExeHan, P_char( AnsiString( _Name ) ), @E );
 
      AssertCL( E );
 end;
@@ -624,7 +622,7 @@ end;
 
 constructor TCLKernel<TCLProgra_,TCLContex_,TCLPlatfo_>.Create( const Progra_:TCLProgra_ );
 begin
-     inherited Create( TCLProgra( Progra_ ).Kernels );
+     inherited Create( TCLExecut( Progra_ ).Kernels );
 end;
 
 constructor TCLKernel<TCLProgra_,TCLContex_,TCLPlatfo_>.Create( const Progra_:TCLProgra_; const Name_:String );
