@@ -88,9 +88,10 @@ begin
           begin
                Add( ' ┃　│　┃　│　┃　│　┃' );
                Add( ' ┃　│　┃　│　┃　│　┣・Deploy[' + L.Order.ToString + '] :TCLDeploy' );
-               Add( ' ┃　│　┃　│　┃　│　┃　├ Device = Platfo[' + L.Device.Platfo.Order.ToString + ']'
-                                                          + '.Device[' + L.Device       .Order.ToString + ']' );
-               Add( ' ┃　│　┃　│　┃　│　┃　├ State  = ' + L.State.ToString );
+               Add( ' ┃　│　┃　│　┃　│　┃　├ Device       = Platfo[' + L.Device.Platfo.Order.ToString + ']'
+                                                                + '.Device[' + L.Device       .Order.ToString + ']' );
+               Add( ' ┃　│　┃　│　┃　│　┃　├ CompileState = ' + L.CompileStatus.ToString );
+               Add( ' ┃　│　┃　│　┃　│　┃　├ LinkState    = ' + L.LinkStatus.ToString );
           end;
      end;
 end;
