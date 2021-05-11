@@ -12,8 +12,9 @@ uses System.SysUtils, System.Classes, System.Generics.Collections,
 
 type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【型】
 
-     TCLProgras <TCLContex_,TCLPlatfo_:class> = class;
-       TCLProgra<TCLContex_,TCLPlatfo_:class> = class;
+     TCLProgras   <TCLContex_,TCLPlatfo_,TCLProgra_ :class> = class;
+       TCLProgra  <TCLContex_,TCLPlatfo_,TCLProgras_:class> = class;
+         TCLSource<TCLContex_,TCLPlatfo_,TCLProgras_:class> = class;
 
      TCLLibrars <TCLContex_,TCLPlatfo_:class> = class;
        TCLLibrar<TCLContex_,TCLPlatfo_:class> = class;
@@ -29,17 +30,17 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLDeploy<TCLContex_,TCLPlatfo_>
 
-     TCLDeploy<TCLContex_,TCLPlatfo_:class> = class( TListChildr<TCLProgra <TCLContex_,TCLPlatfo_>,
+     TCLDeploy<TCLContex_,TCLPlatfo_:class> = class( TListChildr<TCLExecut <TCLContex_,TCLPlatfo_>,
                                                                  TCLDeploys<TCLContex_,TCLPlatfo_>> )
      private
        type TCLDevice_  = TCLDevice <TCLPlatfo_>;
-            TCLProgra_  = TCLProgra <TCLContex_,TCLPlatfo_>;
+            TCLExecut_  = TCLExecut <TCLContex_,TCLPlatfo_>;
             TCLDeploys_ = TCLDeploys<TCLContex_,TCLPlatfo_>;
        ///// メソッド
-       function GetInfo<_TYPE_>( const Name_:T_cl_program_build_info ) :_TYPE_;
-       function GetInfoSize( const Name_:T_cl_program_build_info ) :T_size_t;
-       function GetInfos<_TYPE_>( const Name_:T_cl_program_build_info ) :TArray<_TYPE_>;
-       function GetInfoString( const Name_:T_cl_program_build_info ) :String;
+       function GetInfo<_TYPE_>( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :_TYPE_;
+       function GetInfoSize( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :T_size_t;
+       function GetInfos<_TYPE_>( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :TArray<_TYPE_>;
+       function GetInfoString( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :String;
      protected
        _Handle        :T_cl_program;
        _Device        :TCLDevice_;
@@ -53,7 +54,7 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
      public
        constructor Create( const Deploys_:TCLDeploys_; const Device_:TCLDevice_ ); overload; virtual;
        ///// プロパティ
-       property Progra        :TCLProgra_        read GetOwnere       ;
+       property Execut        :TCLExecut_        read GetOwnere       ;
        property Deploys       :TCLDeploys_       read GetParent       ;
        property Handle        :T_cl_program      read   _Handle       ;
        property Device        :TCLDevice_        read   _Device       ;
@@ -65,11 +66,11 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLDeploys<TCLContex_,TCLPlatfo_>
 
-     TCLDeploys<TCLContex_,TCLPlatfo_:class> = class( TListParent<TCLProgra<TCLContex_,TCLPlatfo_>,
+     TCLDeploys<TCLContex_,TCLPlatfo_:class> = class( TListParent<TCLExecut<TCLContex_,TCLPlatfo_>,
                                                                   TCLDeploy<TCLContex_,TCLPlatfo_>> )
      private
        type TCLDevice_ = TCLDevice<TCLPlatfo_>;
-            TCLProgra_ = TCLProgra<TCLContex_,TCLPlatfo_>;
+            TCLExecut_ = TCLExecut<TCLContex_,TCLPlatfo_>;
             TCLDeploy_ = TCLDeploy<TCLContex_,TCLPlatfo_>;
             TCLDevDeps = TDictionary<TCLDevice_,TCLDeploy_>;
      protected
@@ -83,15 +84,15 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        constructor Create; override;
        destructor Destroy; override;
        ///// プロパティ
-       property Progra                              :TCLProgra_ read GetOwnere ;
+       property Execut                              :TCLExecut_ read GetOwnere ;
        property Deploys[ const Device_:TCLDevice_ ] :TCLDeploy_ read GetDeploys; default;
      end;
 
-     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLSource<TCLContex_,TCLPlatfo_>
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLSource<TCLContex_,TCLPlatfo_,TCLProgras_>
 
-     TCLSource<TCLContex_,TCLPlatfo_:class> = class( TStringList )
+     TCLSource<TCLContex_,TCLPlatfo_,TCLProgras_:class> = class( TStringList )
      private
-       type TCLProgra_ = TCLProgra<TCLContex_,TCLPlatfo_>;
+       type TCLProgra_ = TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>;
      protected
        _Progra :TCLProgra_;
        ///// メソッド
@@ -106,12 +107,11 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        procedure LoadFromFile( const FileName_:String; Encoding_:TEncoding ); override;
      end;
 
-     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgra<TCLContex_,TCLPlatfo_>
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>
 
-     TCLProgra<TCLContex_,TCLPlatfo_:class> = class( TListChildr<TCLContex_,TCLProgras<TCLContex_,TCLPlatfo_>> )
+     TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_:class> = class( TListChildr<TCLContex_,TCLProgras_> )
      private
-       type TCLProgras_ = TCLProgras<TCLContex_,TCLPlatfo_>;
-            TCLSource_  = TCLSource <TCLContex_,TCLPlatfo_>;
+       type TCLSource_ = TCLSource <TCLContex_,TCLPlatfo_,TCLProgras_>;
        ///// メソッド
        function GetInfo<_TYPE_>( const Name_:T_cl_program_info ) :_TYPE_;
        function GetInfoSize( const Name_:T_cl_program_info ) :T_size_t;
@@ -180,7 +180,7 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLLibrar<TCLContex_,TCLPlatfo_>
 
-     TCLLibrar<TCLContex_,TCLPlatfo_:class> = class( TCLProgra<TCLContex_,TCLPlatfo_> )
+     TCLLibrar<TCLContex_,TCLPlatfo_:class> = class( TCLProgra<TCLContex_,TCLPlatfo_,TCLLibrars<TCLContex_,TCLPlatfo_>> )
      private
      protected
      public
@@ -189,10 +189,9 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLExecut<TCLContex_,TCLPlatfo_>
 
-     TCLExecut<TCLContex_,TCLPlatfo_:class> = class( TCLProgra<TCLContex_,TCLPlatfo_> )
+     TCLExecut<TCLContex_,TCLPlatfo_:class> = class( TCLProgra<TCLContex_,TCLPlatfo_,TCLExecuts<TCLContex_,TCLPlatfo_>> )
      private
        type TCLDevice_  = TCLDevice <TCLPlatfo_>;
-            TCLLibrar_  = TCLLibrar <TCLContex_,TCLPlatfo_>;
             TCLExecut_  = TCLExecut <TCLContex_,TCLPlatfo_>;
             TCLDeploys_ = TCLDeploys<TCLContex_,TCLPlatfo_>;
             TCLDeploy_  = TCLDeploy <TCLContex_,TCLPlatfo_>;
@@ -213,9 +212,9 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        function BuildTo( const Device_:TCLDevice_ ) :TCLDeploy_;
      end;
 
-     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgras<TCLContex_,TCLPlatfo_>
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgras<TCLContex_,TCLPlatfo_,TCLProgra_>
 
-     TCLProgras<TCLContex_,TCLPlatfo_:class> = class( TListParent<TCLContex_,TCLProgra<TCLContex_,TCLPlatfo_>> )
+     TCLProgras<TCLContex_,TCLPlatfo_,TCLProgra_:class> = class( TListParent<TCLContex_,TCLProgra_> )
      private
      protected
      public
@@ -225,27 +224,23 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLLibrars<TCLContex_,TCLPlatfo_>
 
-     TCLLibrars<TCLContex_,TCLPlatfo_:class> = class( TCLProgras<TCLContex_,TCLPlatfo_> )
+     TCLLibrars<TCLContex_,TCLPlatfo_:class> = class( TCLProgras<TCLContex_,TCLPlatfo_,TCLLibrar<TCLContex_,TCLPlatfo_>> )
      private
-       type TCLLibrar_   = TCLLibrar<TCLContex_,TCLPlatfo_>;
-            TListEnumer_ = TListEnumer<TCLLibrar_>;
+       type TCLLibrar_ = TCLLibrar<TCLContex_,TCLPlatfo_>;
      protected
      public
        ///// メソッド
-       function GetEnumerator :TListEnumer_;
        function Add :TCLLibrar_; overload;
      end;
 
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLExecuts<TCLContex_,TCLPlatfo_>
 
-     TCLExecuts<TCLContex_,TCLPlatfo_:class> = class( TCLProgras<TCLContex_,TCLPlatfo_> )
+     TCLExecuts<TCLContex_,TCLPlatfo_:class> = class( TCLProgras<TCLContex_,TCLPlatfo_,TCLExecut<TCLContex_,TCLPlatfo_>> )
      private
-       type TCLExecut_   = TCLExecut<TCLContex_,TCLPlatfo_>;
-            TListEnumer_ = TListEnumer<TCLExecut_>;
+       type TCLExecut_ = TCLExecut<TCLContex_,TCLPlatfo_>;
      protected
      public
        ///// メソッド
-       function GetEnumerator :TListEnumer_;
        function Add :TCLExecut_; overload;
      end;
 
@@ -270,30 +265,30 @@ uses System.IOUtils,
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfo<_TYPE_>( const Name_:T_cl_program_build_info ) :_TYPE_;
+function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfo<_TYPE_>( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :_TYPE_;
 begin
-     AssertCL( clGetProgramBuildInfo( Progra.Handle, Device.Handle, Name_, SizeOf( _TYPE_ ), @Result, nil ) );
+     AssertCL( clGetProgramBuildInfo( Handle_, Device.Handle, Name_, SizeOf( _TYPE_ ), @Result, nil ) );
 end;
 
-function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfoSize( const Name_:T_cl_program_build_info ) :T_size_t;
+function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfoSize( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :T_size_t;
 begin
-     AssertCL( clGetProgramBuildInfo( Progra.Handle, Device.Handle, Name_, 0, nil, @Result ) );
+     AssertCL( clGetProgramBuildInfo( Handle_, Device.Handle, Name_, 0, nil, @Result ) );
 end;
 
-function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfos<_TYPE_>( const Name_:T_cl_program_build_info ) :TArray<_TYPE_>;
+function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfos<_TYPE_>( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :TArray<_TYPE_>;
 var
    S :T_size_t;
 begin
-     S := GetInfoSize( Name_ );
+     S := GetInfoSize( Handle_, Name_ );
 
      SetLength( Result, S div Cardinal( SizeOf( _TYPE_ ) ) );
 
-     AssertCL( clGetProgramBuildInfo( Progra.Handle, Device.Handle, Name_, S, @Result[ 0 ], nil ) );
+     AssertCL( clGetProgramBuildInfo( Handle_, Device.Handle, Name_, S, @Result[ 0 ], nil ) );
 end;
 
-function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfoString( const Name_:T_cl_program_build_info ) :String;
+function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfoString( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :String;
 begin
-     Result := TrimRight( String( P_char( GetInfos<T_char>( Name_ ) ) ) );
+     Result := TrimRight( String( P_char( GetInfos<T_char>( Handle_, Name_ ) ) ) );
 end;
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& protected
@@ -311,9 +306,9 @@ begin
      inherited;
 
      Os := '-cl-kernel-arg-info';
-     if Ord( Progra.LangVer ) > 100 then Os := Os + ' -cl-std=CL' + Progra.LangVer.ToString;
+     if Ord( Execut.LangVer ) > 100 then Os := Os + ' -cl-std=CL' + Execut.LangVer.ToString;
 
-     Ls := TCLExecut( Progra ).Contex.Librars;
+     Ls := TCLExecut( Execut ).Contex.Librars;
 
      for L in Ls do
      begin
@@ -321,14 +316,14 @@ begin
           Ns := Ns + [ P_char( AnsiString( L.Name ) ) ];
      end;
 
-     Result := clCompileProgram( Progra.Handle,
+     Result := clCompileProgram( Execut.Handle,
                                  1, @Device.Handle,
                                  P_char( AnsiString( Os ) ),
                                  Ls.Count, @Hs[0], @Ns[0],
                                  nil, nil );
 
-     _CompileStatus := GetInfo<T_cl_build_status>( CL_PROGRAM_BUILD_STATUS );
-     _CompileLog    := GetInfoString             ( CL_PROGRAM_BUILD_LOG    );
+     _CompileStatus := GetInfo<T_cl_build_status>( Execut.Handle, CL_PROGRAM_BUILD_STATUS );
+     _CompileLog    := GetInfoString             ( Execut.Handle, CL_PROGRAM_BUILD_LOG    );
 end;
 
 function TCLDeploy<TCLContex_,TCLPlatfo_>.Link :T_cl_int;
@@ -336,17 +331,17 @@ var
    P :T_cl_program;
    E :T_cl_int;
 begin
-     P := Progra.Handle;
+     P := Execut.Handle;
 
-     _Handle := clLinkProgram( TCLExecut( Progra ).Contex.Handle,
+     _Handle := clLinkProgram( TCLExecut( Execut ).Contex.Handle,
                                1, @Device.Handle,
                                nil,
                                1, @P,
                                nil, nil,
                                @Result );
 
-     _LinkStatus := GetInfo<T_cl_build_status>( CL_PROGRAM_BUILD_STATUS );
-     _LinkLog    := GetInfoString             ( CL_PROGRAM_BUILD_LOG    );
+     _LinkStatus := GetInfo<T_cl_build_status>( _Handle, CL_PROGRAM_BUILD_STATUS );
+     _LinkLog    := GetInfoString             ( _Handle, CL_PROGRAM_BUILD_LOG    );
 end;
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
@@ -407,7 +402,7 @@ begin
      inherited;
 end;
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLSource<TCLContex_,TCLPlatfo_>
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLSource<TCLContex_,TCLPlatfo_,TCLProgras_>
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
 
@@ -415,7 +410,7 @@ end;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-procedure TCLSource<TCLContex_,TCLPlatfo_>.Changed;
+procedure TCLSource<TCLContex_,TCLPlatfo_,TCLProgras_>.Changed;
 begin
      inherited;
 
@@ -424,13 +419,13 @@ end;
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
 
-constructor TCLSource<TCLContex_,TCLPlatfo_>.Create;
+constructor TCLSource<TCLContex_,TCLPlatfo_,TCLProgras_>.Create;
 begin
      inherited;
 
 end;
 
-constructor TCLSource<TCLContex_,TCLPlatfo_>.Create( const Progra_:TCLProgra_ );
+constructor TCLSource<TCLContex_,TCLPlatfo_,TCLProgras_>.Create( const Progra_:TCLProgra_ );
 begin
      Create;
 
@@ -439,37 +434,37 @@ end;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-procedure TCLSource<TCLContex_,TCLPlatfo_>.LoadFromFile( const FileName_:String );
+procedure TCLSource<TCLContex_,TCLPlatfo_,TCLProgras_>.LoadFromFile( const FileName_:String );
 begin
      inherited;
 
      Progra.Name := TPath.GetFileName( FileName_ );
 end;
 
-procedure TCLSource<TCLContex_,TCLPlatfo_>.LoadFromFile( const FileName_:String; Encoding_:TEncoding );
+procedure TCLSource<TCLContex_,TCLPlatfo_,TCLProgras_>.LoadFromFile( const FileName_:String; Encoding_:TEncoding );
 begin
      inherited;
 
      Progra.Name := TPath.GetFileName( FileName_ );
 end;
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgra<TCLContex_,TCLPlatfo_>
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetInfo<_TYPE_>( const Name_:T_cl_program_info ) :_TYPE_;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetInfo<_TYPE_>( const Name_:T_cl_program_info ) :_TYPE_;
 begin
      AssertCL( clGetProgramInfo( Handle, Name_, SizeOf( _TYPE_ ), @Result, nil ) );
 end;
 
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetInfoSize( const Name_:T_cl_program_info ) :T_size_t;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetInfoSize( const Name_:T_cl_program_info ) :T_size_t;
 begin
      AssertCL( clGetProgramInfo( Handle, Name_, 0, nil, @Result ) );
 end;
 
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetInfos<_TYPE_>( const Name_:T_cl_program_info ) :TArray<_TYPE_>;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetInfos<_TYPE_>( const Name_:T_cl_program_info ) :TArray<_TYPE_>;
 var
    S :T_size_t;
 begin
@@ -480,7 +475,7 @@ begin
      AssertCL( clGetProgramInfo( Handle, Name_, S, @Result[ 0 ], nil ) );
 end;
 
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetInfoString( const Name_:T_cl_program_info ) :String;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetInfoString( const Name_:T_cl_program_info ) :String;
 begin
      Result := TrimRight( String( P_char( GetInfos<T_char>( Name_ ) ) ) );
 end;
@@ -489,14 +484,14 @@ end;
 
 /////////////////////////////////////////////////////////////////////// アクセス
 
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetHandle :T_cl_program;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetHandle :T_cl_program;
 begin
      if not Assigned( _Handle ) then CreateHandle;
 
      Result := _Handle;
 end;
 
-procedure TCLProgra<TCLContex_,TCLPlatfo_>.SetHandle( const Handle_:T_cl_program );
+procedure TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.SetHandle( const Handle_:T_cl_program );
 begin
      if Assigned( _Handle ) then DestroHandle;
 
@@ -505,28 +500,28 @@ end;
 
 //---------------------------------------------------------(* cl_program_info *)
 
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_REFERENCE_COUNT :T_cl_uint; begin Result := GetInfo<T_cl_uint>( CL_PROGRAM_REFERENCE_COUNT ); end;
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_CONTEXT :T_cl_context; begin Result := GetInfo<T_cl_context>( CL_PROGRAM_CONTEXT ); end;
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_NUM_DEVICES :T_cl_uint; begin Result := GetInfo<T_cl_uint>( CL_PROGRAM_NUM_DEVICES ); end;
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_DEVICES :TArray<T_cl_device_id>; begin Result := GetInfos<T_cl_device_id>( CL_PROGRAM_DEVICES ); end;
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_SOURCE :String; begin Result := GetInfoString( CL_PROGRAM_SOURCE ); end;
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_BINARY_SIZES :TArray<T_size_t>; begin Result := GetInfos<T_size_t>( CL_PROGRAM_BINARY_SIZES ); end;
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_BINARIES :TArray<P_unsigned_char>; begin Result := GetInfos<P_unsigned_char>( CL_PROGRAM_BINARIES ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_REFERENCE_COUNT :T_cl_uint; begin Result := GetInfo<T_cl_uint>( CL_PROGRAM_REFERENCE_COUNT ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_CONTEXT :T_cl_context; begin Result := GetInfo<T_cl_context>( CL_PROGRAM_CONTEXT ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_NUM_DEVICES :T_cl_uint; begin Result := GetInfo<T_cl_uint>( CL_PROGRAM_NUM_DEVICES ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_DEVICES :TArray<T_cl_device_id>; begin Result := GetInfos<T_cl_device_id>( CL_PROGRAM_DEVICES ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_SOURCE :String; begin Result := GetInfoString( CL_PROGRAM_SOURCE ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_BINARY_SIZES :TArray<T_size_t>; begin Result := GetInfos<T_size_t>( CL_PROGRAM_BINARY_SIZES ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_BINARIES :TArray<P_unsigned_char>; begin Result := GetInfos<P_unsigned_char>( CL_PROGRAM_BINARIES ); end;
 {$IF CL_VERSION_1_2 <> 0 }
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_NUM_KERNELS :T_size_t; begin Result := GetInfo<T_size_t>( CL_PROGRAM_NUM_KERNELS ); end;
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_KERNEL_NAMES :String; begin Result := GetInfoString( CL_PROGRAM_KERNEL_NAMES ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_NUM_KERNELS :T_size_t; begin Result := GetInfo<T_size_t>( CL_PROGRAM_NUM_KERNELS ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_KERNEL_NAMES :String; begin Result := GetInfoString( CL_PROGRAM_KERNEL_NAMES ); end;
 {$ENDIF}
 {$IF CL_VERSION_2_1 <> 0 }
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_IL :String; begin Result := GetInfoString( CL_PROGRAM_IL ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_IL :String; begin Result := GetInfoString( CL_PROGRAM_IL ); end;
 {$ENDIF}
 {$IF CL_VERSION_2_2 <> 0 }
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_SCOPE_GLOBAL_CTORS_PRESENT :T_cl_bool; begin Result := GetInfo<T_cl_bool>( CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT ); end;
-function TCLProgra<TCLContex_,TCLPlatfo_>.GetPROGRAM_SCOPE_GLOBAL_DTORS_PRESENT :T_cl_bool; begin Result := GetInfo<T_cl_bool>( CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_SCOPE_GLOBAL_CTORS_PRESENT :T_cl_bool; begin Result := GetInfo<T_cl_bool>( CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT ); end;
+function TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.GetPROGRAM_SCOPE_GLOBAL_DTORS_PRESENT :T_cl_bool; begin Result := GetInfo<T_cl_bool>( CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT ); end;
 {$ENDIF}
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-procedure TCLProgra<TCLContex_,TCLPlatfo_>.CreateHandle;
+procedure TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.CreateHandle;
 var
    C :P_char;
    E :T_cl_int;
@@ -538,7 +533,7 @@ begin
      AssertCL( E );
 end;
 
-procedure TCLProgra<TCLContex_,TCLPlatfo_>.DestroHandle;
+procedure TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.DestroHandle;
 begin
      clReleaseProgram( _Handle );
 
@@ -547,7 +542,7 @@ end;
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
 
-constructor TCLProgra<TCLContex_,TCLPlatfo_>.Create;
+constructor TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.Create;
 begin
      inherited;
 
@@ -558,7 +553,7 @@ begin
      _LangVer := TCLVersion.From( '3.0' );
 end;
 
-destructor TCLProgra<TCLContex_,TCLPlatfo_>.Destroy;
+destructor TCLProgra<TCLContex_,TCLPlatfo_,TCLProgras_>.Destroy;
 begin
       Handle := nil;
 
@@ -625,7 +620,7 @@ begin
      Result := Deploys[ Device_ ];
 end;
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgras<TCLContex_,TCLPlatfo_>
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgras<TCLContex_,TCLPlatfo_,TCLProgra_>
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
 
@@ -648,13 +643,6 @@ begin
      Result := TCLLibrar_.Create( Contex );
 end;
 
-/////////////////////////////////////////////////////////////////////// メソッド
-
-function TCLLibrars<TCLContex_,TCLPlatfo_>.GetEnumerator: TListEnumer_;
-begin
-     Result := TListEnumer_.Create( Self );
-end;
-
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLExecuts<TCLContex_,TCLPlatfo_>
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
@@ -668,13 +656,6 @@ end;
 function TCLExecuts<TCLContex_,TCLPlatfo_>.Add :TCLExecut_;
 begin
      Result := TCLExecut_.Create( Contex );
-end;
-
-/////////////////////////////////////////////////////////////////////// メソッド
-
-function TCLExecuts<TCLContex_,TCLPlatfo_>.GetEnumerator: TListEnumer_;
-begin
-     Result := TListEnumer_.Create( Self );
 end;
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【ルーチン】
