@@ -76,22 +76,22 @@ begin
      end;
 end;
 
-procedure ShowDeploys( const Strings_:TStrings; const Deploys_:TCLDeploys );
+procedure ShowBuildrs( const Strings_:TStrings; const Buildrs_:TCLBuildrs );
 var
-   L :TCLDeploy;
+   B :TCLBuildr;
 begin
      with Strings_ do
      begin
           Add( ' ┃　│　┃　│　┃　│' );
-          Add( ' ┃　│　┃　│　┃　┝ Deploys(' + Deploys_.Count.ToString + ') :TCLDeploys' );
-          for L in Deploys_ do
+          Add( ' ┃　│　┃　│　┃　┝ Buildrs(' + Buildrs_.Count.ToString + ') :TCLBuildrs' );
+          for B in Buildrs_ do
           begin
                Add( ' ┃　│　┃　│　┃　│　┃' );
-               Add( ' ┃　│　┃　│　┃　│　┣・Deploy[' + L.Order.ToString + '] :TCLDeploy' );
-               Add( ' ┃　│　┃　│　┃　│　┃　├ Device       = Platfo[' + L.Device.Platfo.Order.ToString + ']'
-                                                                + '.Device[' + L.Device       .Order.ToString + ']' );
-               Add( ' ┃　│　┃　│　┃　│　┃　├ CompileState = ' + L.CompileStatus.ToString );
-               Add( ' ┃　│　┃　│　┃　│　┃　├ LinkState    = ' + L.LinkStatus.ToString );
+               Add( ' ┃　│　┃　│　┃　│　┣・Buildr[' + B.Order.ToString + '] :TCLBuildr' );
+               Add( ' ┃　│　┃　│　┃　│　┃　├ Device       = Platfo[' + B.Device.Platfo.Order.ToString + ']'
+                                                                + '.Device[' + B.Device       .Order.ToString + ']' );
+               Add( ' ┃　│　┃　│　┃　│　┃　├ CompileState = ' + B.CompileStatus.ToString );
+               Add( ' ┃　│　┃　│　┃　│　┃　├ LinkState    = ' + B.LinkStatus.ToString );
           end;
      end;
 end;
@@ -111,7 +111,7 @@ begin
                Add( ' ┃　│　┃　│　┃　├ Name    = ' + E.Name );
                Add( ' ┃　│　┃　│　┃　├ LangVer = ' + E.LangVer.ToString );
 
-               ShowDeploys( Strings_, E.Deploys );
+               ShowBuildrs( Strings_, E.Buildrs );
                ShowKernels( Strings_, E.Kernels );
           end;
      end;

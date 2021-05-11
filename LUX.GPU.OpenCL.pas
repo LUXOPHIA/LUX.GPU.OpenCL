@@ -35,8 +35,8 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                  TCLLibrar         = TCLLibrar <TCLContex,TCLPlatfo>;
                TCLExecuts          = TCLExecuts<TCLContex,TCLPlatfo>;
                  TCLExecut         = TCLExecut <TCLContex,TCLPlatfo>;
-                   TCLDeploys      = TCLDeploys<TCLContex,TCLPlatfo>;
-                     TCLDeploy     = TCLDeploy <TCLContex,TCLPlatfo>;
+                   TCLBuildrs      = TCLBuildrs<TCLContex,TCLPlatfo>;
+                     TCLBuildr     = TCLBuildr <TCLContex,TCLPlatfo>;
                    TCLKernels      = TCLKernels<TCLExecut,TCLContex,TCLPlatfo>;
                      TCLKernel     = TCLKernel <TCLExecut,TCLContex,TCLPlatfo>;
                        TCLArgumes  = TCLArgumes<TCLExecut,TCLContex,TCLPlatfo>;

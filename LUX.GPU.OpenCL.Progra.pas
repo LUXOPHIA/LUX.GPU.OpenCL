@@ -21,21 +21,21 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
      TCLExecuts     <TCLContex_,TCLPlatfo_:class> = class;
        TCLExecut    <TCLContex_,TCLPlatfo_:class> = class;
-         TCLDeploys <TCLContex_,TCLPlatfo_:class> = class;
-           TCLDeploy<TCLContex_,TCLPlatfo_:class> = class;
+         TCLBuildrs <TCLContex_,TCLPlatfo_:class> = class;
+           TCLBuildr<TCLContex_,TCLPlatfo_:class> = class;
 
      //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【レコード】
 
      //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【クラス】
 
-     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLDeploy<TCLContex_,TCLPlatfo_>
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLBuildr<TCLContex_,TCLPlatfo_>
 
-     TCLDeploy<TCLContex_,TCLPlatfo_:class> = class( TListChildr<TCLExecut <TCLContex_,TCLPlatfo_>,
-                                                                 TCLDeploys<TCLContex_,TCLPlatfo_>> )
+     TCLBuildr<TCLContex_,TCLPlatfo_:class> = class( TListChildr<TCLExecut <TCLContex_,TCLPlatfo_>,
+                                                                 TCLBuildrs<TCLContex_,TCLPlatfo_>> )
      private
        type TCLDevice_  = TCLDevice <TCLPlatfo_>;
             TCLExecut_  = TCLExecut <TCLContex_,TCLPlatfo_>;
-            TCLDeploys_ = TCLDeploys<TCLContex_,TCLPlatfo_>;
+            TCLBuildrs_ = TCLBuildrs<TCLContex_,TCLPlatfo_>;
        ///// メソッド
        function GetInfo<_TYPE_>( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :_TYPE_;
        function GetInfoSize( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :T_size_t;
@@ -52,10 +52,10 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        function Compile :T_cl_int;
        function Link :T_cl_int;
      public
-       constructor Create( const Deploys_:TCLDeploys_; const Device_:TCLDevice_ ); overload; virtual;
+       constructor Create( const Buildrs_:TCLBuildrs_; const Device_:TCLDevice_ ); overload; virtual;
        ///// プロパティ
        property Execut        :TCLExecut_        read GetOwnere       ;
-       property Deploys       :TCLDeploys_       read GetParent       ;
+       property Buildrs       :TCLBuildrs_       read GetParent       ;
        property Handle        :T_cl_program      read   _Handle       ;
        property Device        :TCLDevice_        read   _Device       ;
        property CompileStatus :T_cl_build_status read   _CompileStatus;
@@ -64,28 +64,28 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        property LinkLog       :String            read   _LinkLog      ;
      end;
 
-     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLDeploys<TCLContex_,TCLPlatfo_>
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLBuildrs<TCLContex_,TCLPlatfo_>
 
-     TCLDeploys<TCLContex_,TCLPlatfo_:class> = class( TListParent<TCLExecut<TCLContex_,TCLPlatfo_>,
-                                                                  TCLDeploy<TCLContex_,TCLPlatfo_>> )
+     TCLBuildrs<TCLContex_,TCLPlatfo_:class> = class( TListParent<TCLExecut<TCLContex_,TCLPlatfo_>,
+                                                                  TCLBuildr<TCLContex_,TCLPlatfo_>> )
      private
        type TCLDevice_ = TCLDevice<TCLPlatfo_>;
             TCLExecut_ = TCLExecut<TCLContex_,TCLPlatfo_>;
-            TCLDeploy_ = TCLDeploy<TCLContex_,TCLPlatfo_>;
-            TCLDevDeps = TDictionary<TCLDevice_,TCLDeploy_>;
+            TCLBuildr_ = TCLBuildr<TCLContex_,TCLPlatfo_>;
+            TCLDevDeps = TDictionary<TCLDevice_,TCLBuildr_>;
      protected
        _DevDeps :TCLDevDeps;
        ///// アクセス
-       function GetDeploys( const Device_:TCLDevice_ ) :TCLDeploy_; virtual;
+       function GetBuildrs( const Device_:TCLDevice_ ) :TCLBuildr_; virtual;
        ///// イベント
-       procedure OnInsertChild( const Childr_:TCLDeploy_ ); override;
-       procedure OnRemoveChild( const Childr_:TCLDeploy_ ); override;
+       procedure OnInsertChild( const Childr_:TCLBuildr_ ); override;
+       procedure OnRemoveChild( const Childr_:TCLBuildr_ ); override;
      public
        constructor Create; override;
        destructor Destroy; override;
        ///// プロパティ
        property Execut                              :TCLExecut_ read GetOwnere ;
-       property Deploys[ const Device_:TCLDevice_ ] :TCLDeploy_ read GetDeploys; default;
+       property Buildrs[ const Device_:TCLDevice_ ] :TCLBuildr_ read GetBuildrs; default;
      end;
 
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLSource<TCLContex_,TCLPlatfo_,TCLProgras_>
@@ -193,11 +193,11 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
      private
        type TCLDevice_  = TCLDevice <TCLPlatfo_>;
             TCLExecut_  = TCLExecut <TCLContex_,TCLPlatfo_>;
-            TCLDeploys_ = TCLDeploys<TCLContex_,TCLPlatfo_>;
-            TCLDeploy_  = TCLDeploy <TCLContex_,TCLPlatfo_>;
+            TCLBuildrs_ = TCLBuildrs<TCLContex_,TCLPlatfo_>;
+            TCLBuildr_  = TCLBuildr <TCLContex_,TCLPlatfo_>;
             TCLKernels_ = TCLKernels<TCLExecut_,TCLContex_,TCLPlatfo_>;
      protected
-       _Deploys :TCLDeploys_;
+       _Buildrs :TCLBuildrs_;
        _Kernels :TCLKernels_;
        ///// メソッド
        procedure DestroHandle; override;
@@ -206,10 +206,10 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        constructor Create( const Contex_:TCLContex_ ); overload; virtual;
        destructor Destroy; override;
        ///// プロパティ
-       property Deploys :TCLDeploys_ read _Deploys;
+       property Buildrs :TCLBuildrs_ read _Buildrs;
        property Kernels :TCLKernels_ read _Kernels;
        ///// メソッド
-       function BuildTo( const Device_:TCLDevice_ ) :TCLDeploy_;
+       function BuildTo( const Device_:TCLDevice_ ) :TCLBuildr_;
      end;
 
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgras<TCLContex_,TCLPlatfo_,TCLProgra_>
@@ -259,23 +259,23 @@ uses System.IOUtils,
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【クラス】
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLDeploy<TCLContex_,TCLPlatfo_>
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLBuildr<TCLContex_,TCLPlatfo_>
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfo<_TYPE_>( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :_TYPE_;
+function TCLBuildr<TCLContex_,TCLPlatfo_>.GetInfo<_TYPE_>( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :_TYPE_;
 begin
      AssertCL( clGetProgramBuildInfo( Handle_, Device.Handle, Name_, SizeOf( _TYPE_ ), @Result, nil ) );
 end;
 
-function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfoSize( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :T_size_t;
+function TCLBuildr<TCLContex_,TCLPlatfo_>.GetInfoSize( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :T_size_t;
 begin
      AssertCL( clGetProgramBuildInfo( Handle_, Device.Handle, Name_, 0, nil, @Result ) );
 end;
 
-function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfos<_TYPE_>( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :TArray<_TYPE_>;
+function TCLBuildr<TCLContex_,TCLPlatfo_>.GetInfos<_TYPE_>( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :TArray<_TYPE_>;
 var
    S :T_size_t;
 begin
@@ -286,7 +286,7 @@ begin
      AssertCL( clGetProgramBuildInfo( Handle_, Device.Handle, Name_, S, @Result[ 0 ], nil ) );
 end;
 
-function TCLDeploy<TCLContex_,TCLPlatfo_>.GetInfoString( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :String;
+function TCLBuildr<TCLContex_,TCLPlatfo_>.GetInfoString( const Handle_:T_cl_program; const Name_:T_cl_program_build_info ) :String;
 begin
      Result := TrimRight( String( P_char( GetInfos<T_char>( Handle_, Name_ ) ) ) );
 end;
@@ -295,7 +295,7 @@ end;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-function TCLDeploy<TCLContex_,TCLPlatfo_>.Compile :T_cl_int;
+function TCLBuildr<TCLContex_,TCLPlatfo_>.Compile :T_cl_int;
 var
    Os :String;
    Hs :TArray<T_cl_program>;
@@ -326,7 +326,7 @@ begin
      _CompileLog    := GetInfoString             ( Execut.Handle, CL_PROGRAM_BUILD_LOG    );
 end;
 
-function TCLDeploy<TCLContex_,TCLPlatfo_>.Link :T_cl_int;
+function TCLBuildr<TCLContex_,TCLPlatfo_>.Link :T_cl_int;
 var
    H :T_cl_program;
 begin
@@ -345,9 +345,9 @@ end;
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
 
-constructor TCLDeploy<TCLContex_,TCLPlatfo_>.Create( const Deploys_:TCLDeploys_; const Device_:TCLDevice_ );
+constructor TCLBuildr<TCLContex_,TCLPlatfo_>.Create( const Buildrs_:TCLBuildrs_; const Device_:TCLDevice_ );
 begin
-     inherited Create( Deploys_ );
+     inherited Create( Buildrs_ );
 
      _Device := Device_;
 
@@ -355,7 +355,7 @@ begin
      Link;
 end;
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLDeploys<TCLContex_,TCLPlatfo_>
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLBuildrs<TCLContex_,TCLPlatfo_>
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
 
@@ -363,22 +363,22 @@ end;
 
 /////////////////////////////////////////////////////////////////////// アクセス
 
-function TCLDeploys<TCLContex_,TCLPlatfo_>.GetDeploys( const Device_:TCLDevice_ ) :TCLDeploy_;
+function TCLBuildrs<TCLContex_,TCLPlatfo_>.GetBuildrs( const Device_:TCLDevice_ ) :TCLBuildr_;
 begin
      if _DevDeps.ContainsKey( Device_ ) then Result := _DevDeps[ Device_ ]
-                                        else Result := TCLDeploy_.Create( Self, Device_ );
+                                        else Result := TCLBuildr_.Create( Self, Device_ );
 end;
 
 /////////////////////////////////////////////////////////////////////// イベント
 
-procedure TCLDeploys<TCLContex_,TCLPlatfo_>.OnInsertChild( const Childr_:TCLDeploy_ );
+procedure TCLBuildrs<TCLContex_,TCLPlatfo_>.OnInsertChild( const Childr_:TCLBuildr_ );
 begin
      inherited;
 
      _DevDeps.Add( Childr_.Device, Childr_ );
 end;
 
-procedure TCLDeploys<TCLContex_,TCLPlatfo_>.OnRemoveChild( const Childr_:TCLDeploy_ );
+procedure TCLBuildrs<TCLContex_,TCLPlatfo_>.OnRemoveChild( const Childr_:TCLBuildr_ );
 begin
      inherited;
 
@@ -387,14 +387,14 @@ end;
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
 
-constructor TCLDeploys<TCLContex_,TCLPlatfo_>.Create;
+constructor TCLBuildrs<TCLContex_,TCLPlatfo_>.Create;
 begin
      inherited;
 
      _DevDeps := TCLDevDeps.Create;
 end;
 
-destructor TCLDeploys<TCLContex_,TCLPlatfo_>.Destroy;
+destructor TCLBuildrs<TCLContex_,TCLPlatfo_>.Destroy;
 begin
      _DevDeps.Free;
 
@@ -581,7 +581,7 @@ end;
 
 procedure TCLExecut<TCLContex_,TCLPlatfo_>.DestroHandle;
 begin
-     _Deploys.Clear;
+     _Buildrs.Clear;
 
      inherited;
 end;
@@ -592,7 +592,7 @@ constructor TCLExecut<TCLContex_,TCLPlatfo_>.Create;
 begin
      inherited;
 
-     _Deploys := TCLDeploys_.Create( Self );
+     _Buildrs := TCLBuildrs_.Create( Self );
      _Kernels := TCLKernels_.Create( Self );
 end;
 
@@ -604,16 +604,16 @@ end;
 destructor TCLExecut<TCLContex_,TCLPlatfo_>.Destroy;
 begin
      _Kernels.Free;
-     _Deploys.Free;
+     _Buildrs.Free;
 
      inherited;
 end;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-function TCLExecut<TCLContex_,TCLPlatfo_>.BuildTo( const Device_:TCLDevice_ ) :TCLDeploy_;
+function TCLExecut<TCLContex_,TCLPlatfo_>.BuildTo( const Device_:TCLDevice_ ) :TCLBuildr_;
 begin
-     Result := Deploys[ Device_ ];
+     Result := Buildrs[ Device_ ];
 end;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgras<TCLContex_,TCLPlatfo_,TCLProgra_>

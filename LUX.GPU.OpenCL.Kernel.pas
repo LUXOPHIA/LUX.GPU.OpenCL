@@ -589,9 +589,9 @@ end;
 
 function TCLKernel<TCLExecut_,TCLContex_,TCLPlatfo_>.CreateHandle :T_cl_int;
 var
-   B :TCLDeploy;
+   B :TCLBuildr;
 begin
-     B := TCLExecut( Execut ).Deploys[ TCLQueuer( Queuer ).Device ];
+     B := TCLExecut( Execut ).Buildrs[ TCLQueuer( Queuer ).Device ];
 
      _Handle := clCreateKernel( B.Handle, P_char( AnsiString( _Name ) ), @Result );
 end;
