@@ -2,7 +2,7 @@
 
 interface //#################################################################### ■
 
-uses System.Classes, System.Generics.Collections,
+uses System.SysUtils, System.Classes, System.Generics.Collections,
      cl_version, cl_platform, cl,
      LUX.Data.List,
      LUX.Code.C,
@@ -12,9 +12,14 @@ uses System.Classes, System.Generics.Collections,
 
 type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【型】
 
-     TCLProgras     <TCLContex_,TCLPlatfo_:class> = class;
-       TCLProgra    <TCLContex_,TCLPlatfo_:class> = class;
-         TCLSource  <TCLContex_,TCLPlatfo_:class> = class;
+     TCLProgras <TCLContex_,TCLPlatfo_:class> = class;
+       TCLProgra<TCLContex_,TCLPlatfo_:class> = class;
+
+     TCLLibrars <TCLContex_,TCLPlatfo_:class> = class;
+       TCLLibrar<TCLContex_,TCLPlatfo_:class> = class;
+
+     TCLExecuts     <TCLContex_,TCLPlatfo_:class> = class;
+       TCLExecut    <TCLContex_,TCLPlatfo_:class> = class;
          TCLDeploys <TCLContex_,TCLPlatfo_:class> = class;
            TCLDeploy<TCLContex_,TCLPlatfo_:class> = class;
 
@@ -85,6 +90,11 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
      public
        constructor Create; overload; virtual;
        constructor Create( const Progra_:TCLProgra_ ); overload; virtual;
+       ///// プロパティ
+       property Progra :TCLProgra_ read _Progra;
+       ///// メソッド
+       procedure LoadFromFile( const FileName_:String ); override;
+       procedure LoadFromFile( const FileName_:String; Encoding_:TEncoding ); override;
      end;
 
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgra<TCLContex_,TCLPlatfo_>
@@ -97,7 +107,6 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             TCLSource_  = TCLSource <TCLContex_,TCLPlatfo_>;
             TCLDeploys_ = TCLDeploys<TCLContex_,TCLPlatfo_>;
             TCLDeploy_  = TCLDeploy <TCLContex_,TCLPlatfo_>;
-            TCLKernels_ = TCLKernels<TCLProgra_,TCLContex_,TCLPlatfo_>;
        ///// メソッド
        function GetInfo<_TYPE_>( const Name_:T_cl_program_info ) :_TYPE_;
        function GetInfoSize( const Name_:T_cl_program_info ) :T_size_t;
@@ -105,10 +114,10 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        function GetInfoString( const Name_:T_cl_program_info ) :String;
      protected
        _Handle  :T_cl_program;
+       _Name    :String;
        _Source  :TCLSource_;
        _LangVer :TCLVersion;
        _Deploys :TCLDeploys_;
-       _Kernels :TCLKernels_;
        ///// アクセス
        function GetHandle :T_cl_program;
        procedure SetHandle( const Handle_:T_cl_program );
@@ -132,20 +141,19 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        function GetPROGRAM_SCOPE_GLOBAL_DTORS_PRESENT :T_cl_bool ;
        {$ENDIF}
        ///// メソッド
-       procedure CreateHandle;
-       procedure DestroHandle;
+       procedure CreateHandle; virtual;
+       procedure DestroHandle; virtual;
      public
        constructor Create; override;
-       constructor Create( const Contex_:TCLContex_ ); overload; virtual;
        destructor Destroy; override;
        ///// プロパティ
        property Contex  :TCLContex_   read GetOwnere                 ;
        property Progras :TCLProgras_  read GetParent                 ;
        property Handle  :T_cl_program read GetHandle  write SetHandle;
+       property Name    :String       read   _Name    write   _Name  ;
        property Source  :TCLSource_   read   _Source                 ;
        property LangVer :TCLVersion   read   _LangVer                ;
        property Deploys :TCLDeploys_  read   _Deploys                ;
-       property Kernels :TCLKernels_  read   _Kernels                ;
        (* cl_program_info *)
        property PROGRAM_REFERENCE_COUNT            :T_cl_uint               read GetPROGRAM_REFERENCE_COUNT;
        property PROGRAM_CONTEXT                    :T_cl_context            read GetPROGRAM_CONTEXT;
@@ -169,17 +177,75 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        function BuildTo( const Device_:TCLDevice_ ) :TCLDeploy_;
      end;
 
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLLibrar<TCLContex_,TCLPlatfo_>
+
+     TCLLibrar<TCLContex_,TCLPlatfo_:class> = class( TCLProgra<TCLContex_,TCLPlatfo_> )
+     private
+     protected
+     public
+       constructor Create( const Contex_:TCLContex_ ); overload; virtual;
+     end;
+
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLExecut<TCLContex_,TCLPlatfo_>
+
+     TCLExecut<TCLContex_,TCLPlatfo_:class> = class( TCLProgra<TCLContex_,TCLPlatfo_> )
+     private
+       type TCLLibrar_  = TCLLibrar <TCLContex_,TCLPlatfo_>;
+            TCLExecut_  = TCLExecut <TCLContex_,TCLPlatfo_>;
+            TCLKernels_ = TCLKernels<TCLExecut_,TCLContex_,TCLPlatfo_>;
+     protected
+       _ExeHan  :T_cl_program;
+       _Kernels :TCLKernels_;
+       ///// アクセス
+       function GetExeHan :T_cl_program;
+       procedure SetExeHan( const ExeHan_:T_cl_program );
+       ///// メソッド
+       procedure CreateHandle; override;
+       procedure CreateExeHan; virtual;
+       procedure DestroExeHan; virtual;
+     public
+       constructor Create; override;
+       constructor Create( const Contex_:TCLContex_ ); overload; virtual;
+       destructor Destroy; override;
+       ///// プロパティ
+       property ExeHan  :T_cl_program read GetExeHan  write SetExeHan;
+       property Kernels :TCLKernels_  read   _Kernels                ;
+     end;
+
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgras<TCLContex_,TCLPlatfo_>
 
      TCLProgras<TCLContex_,TCLPlatfo_:class> = class( TListParent<TCLContex_,TCLProgra<TCLContex_,TCLPlatfo_>> )
      private
-       type TCLProgra_ = TCLProgra<TCLContex_,TCLPlatfo_>;
      protected
      public
        ///// プロパティ
        property Contex :TCLContex_ read GetOwnere;
+     end;
+
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLLibrars<TCLContex_,TCLPlatfo_>
+
+     TCLLibrars<TCLContex_,TCLPlatfo_:class> = class( TCLProgras<TCLContex_,TCLPlatfo_> )
+     private
+       type TCLLibrar_   = TCLLibrar<TCLContex_,TCLPlatfo_>;
+            TListEnumer_ = TListEnumer<TCLLibrar_>;
+     protected
+     public
        ///// メソッド
-       function Add :TCLProgra_; overload;
+       function GetEnumerator :TListEnumer_;
+       function Add :TCLLibrar_; overload;
+     end;
+
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLExecuts<TCLContex_,TCLPlatfo_>
+
+     TCLExecuts<TCLContex_,TCLPlatfo_:class> = class( TCLProgras<TCLContex_,TCLPlatfo_> )
+     private
+       type TCLExecut_   = TCLExecut<TCLContex_,TCLPlatfo_>;
+            TListEnumer_ = TListEnumer<TCLExecut_>;
+     protected
+     public
+       ///// メソッド
+       function GetEnumerator :TListEnumer_;
+       function Add :TCLExecut_; overload;
      end;
 
 //const //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【定数】
@@ -190,7 +256,7 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 implementation //############################################################### ■
 
-uses System.SysUtils,
+uses System.IOUtils,
      LUX.GPU.OpenCL;
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【レコード】
@@ -334,6 +400,22 @@ begin
      _Progra := Progra_;
 end;
 
+/////////////////////////////////////////////////////////////////////// メソッド
+
+procedure TCLSource<TCLContex_,TCLPlatfo_>.LoadFromFile( const FileName_:String );
+begin
+     inherited;
+
+     Progra.Name := TPath.GetFileName( FileName_ );
+end;
+
+procedure TCLSource<TCLContex_,TCLPlatfo_>.LoadFromFile( const FileName_:String; Encoding_:TEncoding );
+begin
+     inherited;
+
+     Progra.Name := TPath.GetFileName( FileName_ );
+end;
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgra<TCLContex_,TCLPlatfo_>
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
@@ -436,23 +518,16 @@ begin
 
      _Source  := TCLSource_ .Create( Self );
      _Deploys := TCLDeploys_.Create( Self );
-     _Kernels := TCLKernels_.Create( Self );
 
      _Handle := nil;
 
      _LangVer := TCLVersion.From( '3.0' );
 end;
 
-constructor TCLProgra<TCLContex_,TCLPlatfo_>.Create( const Contex_:TCLContex_ );
-begin
-     inherited Create( TCLContex( Contex_ ).Progras );
-end;
-
 destructor TCLProgra<TCLContex_,TCLPlatfo_>.Destroy;
 begin
       Handle := nil;
 
-     _Kernels.Free;
      _Deploys.Free;
      _Source .Free;
 
@@ -466,7 +541,119 @@ begin
      Result := Deploys.Add( Device_ );
 end;
 
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLLibrar<TCLContex_,TCLPlatfo_>
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& protected
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
+
+constructor TCLLibrar<TCLContex_,TCLPlatfo_>.Create( const Contex_:TCLContex_ );
+begin
+     inherited Create( TCLContex( Contex_ ).Librars );
+end;
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLExecut<TCLContex_,TCLPlatfo_>
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& protected
+
+/////////////////////////////////////////////////////////////////////// アクセス
+
+function TCLExecut<TCLContex_,TCLPlatfo_>.GetExeHan :T_cl_program;
+begin
+     if not Assigned( _ExeHan ) then CreateExeHan;
+
+     Result := _ExeHan;
+end;
+
+procedure TCLExecut<TCLContex_,TCLPlatfo_>.SetExeHan( const ExeHan_:T_cl_program );
+begin
+     if Assigned( _ExeHan ) then DestroExeHan;
+
+     _ExeHan := ExeHan_;
+end;
+
+/////////////////////////////////////////////////////////////////////// メソッド
+
+procedure TCLExecut<TCLContex_,TCLPlatfo_>.CreateHandle;
+var
+   Os :String;
+   Hs :TArray<T_cl_program>;
+   Ns :TArray<P_char>;
+   L :TCLLibrar;
+begin
+     inherited;
+
+     Os := '-cl-kernel-arg-info';
+     if Ord( LangVer ) > 100 then Os := Os + ' -cl-std=CL' + LangVer.ToString;
+
+     for L in TCLContex( Contex ).Librars do
+     begin
+          Hs := Hs + [ L.Handle ];
+          Ns := Ns + [ P_char( AnsiString( L.Name ) ) ];
+     end;
+
+     AssertCL( clCompileProgram( _Handle, 0, nil, P_char( AnsiString( Os ) ),
+                                 TCLContex( Contex ).Librars.Count, @Hs[0], @Ns[0],
+                                 nil, nil ) );
+end;
+
+procedure TCLExecut<TCLContex_,TCLPlatfo_>.CreateExeHan;
+var
+   P :T_cl_program;
+   E :T_cl_int;
+begin
+     P := Handle;
+
+     _ExeHan := clLinkProgram( TCLContex( Contex ).Handle, 0, nil, nil, 1, @P, nil, nil, @E );
+
+     AssertCL( E );
+end;
+
+procedure TCLExecut<TCLContex_,TCLPlatfo_>.DestroExeHan;
+begin
+     clReleaseProgram( _ExeHan );
+
+     _ExeHan := nil;
+end;
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
+
+constructor TCLExecut<TCLContex_,TCLPlatfo_>.Create;
+begin
+     inherited;
+
+     _Kernels := TCLKernels_.Create( Self );
+
+     _ExeHan := nil;
+end;
+
+constructor TCLExecut<TCLContex_,TCLPlatfo_>.Create( const Contex_:TCLContex_ );
+begin
+     inherited Create( TCLContex( Contex_ ).Executs );
+end;
+
+destructor TCLExecut<TCLContex_,TCLPlatfo_>.Destroy;
+begin
+      ExeHan := nil;
+
+     _Kernels.Free;
+
+     inherited;
+end;
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLProgras<TCLContex_,TCLPlatfo_>
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& protected
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLLibrars<TCLContex_,TCLPlatfo_>
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
 
@@ -476,9 +663,38 @@ end;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-function TCLProgras<TCLContex_,TCLPlatfo_>.Add :TCLProgra_;
+function TCLLibrars<TCLContex_,TCLPlatfo_>.Add :TCLLibrar_;
 begin
-     Result := TCLProgra_.Create( Contex );
+     Result := TCLLibrar_.Create( Contex );
+end;
+
+/////////////////////////////////////////////////////////////////////// メソッド
+
+function TCLLibrars<TCLContex_,TCLPlatfo_>.GetEnumerator: TListEnumer_;
+begin
+     Result := TListEnumer_.Create( Self );
+end;
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TCLExecuts<TCLContex_,TCLPlatfo_>
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& protected
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
+
+/////////////////////////////////////////////////////////////////////// メソッド
+
+function TCLExecuts<TCLContex_,TCLPlatfo_>.Add :TCLExecut_;
+begin
+     Result := TCLExecut_.Create( Contex );
+end;
+
+/////////////////////////////////////////////////////////////////////// メソッド
+
+function TCLExecuts<TCLContex_,TCLPlatfo_>.GetEnumerator: TListEnumer_;
+begin
+     Result := TListEnumer_.Create( Self );
 end;
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【ルーチン】
