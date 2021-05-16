@@ -54,7 +54,7 @@ permalink: /ja/
 >　┃　┣ LUX.GPU.OpenCL.core  
 >　┃　┣[`LUX.GPU.OpenCL.Device`](https://github.com/LUXOPHIA/LUX.GPU.OpenCL/blob/master/LUX.GPU.OpenCL.Device.pas) ：デバイス  
 >　┃　┃　┗ LUX.GPU.OpenCL.core  
->　┃　┗[`LUX.GPU.OpenCL.Contex`](https://github.com/LUXOPHIA/LUX.GPU.OpenCL/blob/master/LUX.GPU.OpenCL.Contex.pas) ：コンテキスト 
+>　┃　┗[`LUX.GPU.OpenCL.Contex`](https://github.com/LUXOPHIA/LUX.GPU.OpenCL/blob/master/LUX.GPU.OpenCL.Contex.pas) ：コンテキスト  
 >　┃　　　┣[`LUX.GPU.OpenCL.Queuer`](https://github.com/LUXOPHIA/LUX.GPU.OpenCL/blob/master/LUX.GPU.OpenCL.Queuer.pas) ：コマンドキュー  
 >　┃　　　┃　┣ LUX.GPU.OpenCL.core  
 >　┃　　　┃　┗ LUX.GPU.OpenCL.Device  
