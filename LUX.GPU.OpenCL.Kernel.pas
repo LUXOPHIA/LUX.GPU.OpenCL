@@ -769,7 +769,7 @@ procedure TCLKernel<TCLSystem_,TCLPlatfo_,TCLContex_,TCLExecut_>.Run;
 begin
      Parames.BindsOK;
 
-     AssertCL( clEnqueueNDRangeKernel( _Queuer.Handle, Handle,
+     AssertCL( clEnqueueNDRangeKernel( Queuer.Handle, Handle,
                                        2, @_GloMin, @_GloSiz, nil,
                                        0, nil, nil ), 'TCLKernel.Run is Error!' );
 
